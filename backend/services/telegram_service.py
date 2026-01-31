@@ -100,3 +100,24 @@ async def get_updates(offset: int = None, timeout: int = 30) -> dict:
             timeout=timeout + 10  # Add buffer for network latency
         )
         return response.json()
+
+
+async def get_file(file_id: str) -> dict:
+    """Get file info from Telegram."""
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{get_api_url()}/getFile",
+            json={"file_id": file_id},
+            timeout=30.0
+        )
+        return response.json()
+
+
+async def download_file(file_path: str) -> bytes:
+    """Download a file from Telegram servers."""
+    file_url = f"https://api.telegram.org/file/bot{TELEGRAM_BOT_TOKEN}/{file_path}"
+    async with httpx.AsyncClient() as client:
+        response = await client.get(file_url, timeout=60.0)
+        if response.status_code != 200:
+            raise Exception(f"Failed to download file: {response.status_code}")
+        return response.content

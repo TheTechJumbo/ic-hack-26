@@ -10,7 +10,8 @@ from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from services.elevenlabs import generate_voice_message
+from services.elevenlabs import generate_voice_message, create_voice_clone
+from services.voice_store import save_user_voice, get_user_voice
 
 # ElevenLabs Conversational AI Agent ID
 ELEVENLABS_AGENT_ID = os.getenv("ELEVENLABS_AGENT_ID")
@@ -27,7 +28,12 @@ from services.telegram_service import (
     set_webhook,
     delete_webhook,
     get_updates,
+    get_file,
+    download_file,
 )
+
+# Track users waiting to send voice for cloning
+users_awaiting_voice = set()
 
 WELCOME_MESSAGE = """Hey {name}, welcome to Kalm. I'm so glad you're here. I'm your personal recovery companion, available 24/7 whenever you need support. Whether you're feeling stressed, having cravings, or just need someone to talk to - I'm here for you. Just send me a message anytime, and I'll respond with a voice note. You've already taken a brave step by being here. You're not alone in this journey."""
 
@@ -49,9 +55,74 @@ You can also text:
 These services are free, confidential, and available 24/7. You matter, and help is available right now. 💚"""
 
 
+async def process_voice_clone(chat_id: int, voice_file_id: str, first_name: str):
+    """Process a voice message for cloning."""
+    try:
+        await send_text_message(chat_id, "🎤 Got your voice! Cloning now... This may take a moment.")
+
+        # Get file info and download
+        file_info = await get_file(voice_file_id)
+        if not file_info.get("ok"):
+            raise Exception("Failed to get file info")
+
+        file_path = file_info["result"]["file_path"]
+        audio_bytes = await download_file(file_path)
+
+        # Create voice clone with ElevenLabs
+        voice_id = await create_voice_clone(
+            audio_bytes=audio_bytes,
+            name=f"kalm_user_{chat_id}"
+        )
+
+        # Save the voice ID
+        save_user_voice(str(chat_id), voice_id)
+
+        await send_text_message(
+            chat_id,
+            f"✨ Voice cloned successfully, {first_name}!\n\nNow you can use /me anytime to hear an encouraging message from your future self. Try it now! 💚"
+        )
+
+    except Exception as e:
+        print(f"Voice cloning error: {e}")
+        await send_text_message(
+            chat_id,
+            "Sorry, I couldn't clone your voice. Please try again with a clearer recording (15-30 seconds works best). 🎙️"
+        )
+    finally:
+        # Remove from awaiting set
+        users_awaiting_voice.discard(chat_id)
+
+
 async def process_telegram_message(chat_id: int, text: str, first_name: str = "friend"):
     """Process incoming message and send voice response."""
     try:
+        # Handle /clone command - start voice cloning flow
+        if text.startswith("/clone"):
+            users_awaiting_voice.add(chat_id)
+            await send_text_message(
+                chat_id,
+                f"🎤 Let's clone your voice, {first_name}!\n\nPlease send me a voice message (15-30 seconds) where you speak clearly and naturally. Say anything you like - maybe introduce yourself or read a passage.\n\nOnce I have your voice, you'll be able to use /me to hear encouragement from your future self! 💚"
+            )
+            return
+
+        # Handle /me command - send message in cloned voice
+        if text.startswith("/me"):
+            voice_id = get_user_voice(str(chat_id))
+            if not voice_id:
+                await send_text_message(
+                    chat_id,
+                    f"You haven't cloned your voice yet, {first_name}!\n\nUse /clone to record your voice first, then /me will work. 🎙️"
+                )
+                return
+
+            await send_text_message(chat_id, "Recording a message from your future self... 🎙️")
+
+            future_self_message = f"""Hey {first_name}, this is future you speaking. I know things might feel hard right now, but I want you to know how proud I am of you. Every day you choose recovery, you're choosing yourself. You're building a life worth living. Keep going - I'm proof that it gets better. You've got this."""
+
+            audio_bytes = generate_voice_message(future_self_message, voice_id=voice_id)
+            await send_voice_message(chat_id=str(chat_id), audio_bytes=audio_bytes)
+            return
+
         # Handle /call command - send link to voice chat (no voice message)
         if text.startswith("/call"):
             await send_text_message(
@@ -146,7 +217,14 @@ async def poll_telegram():
                         text = message.get("text", "")
                         first_name = message.get("from", {}).get("first_name", "friend")
 
-                        if text:
+                        # Check if user sent a voice message while in clone mode
+                        if "voice" in message and chat_id in users_awaiting_voice:
+                            voice_file_id = message["voice"]["file_id"]
+                            print(f"🎤 Voice message from {first_name} for cloning")
+                            asyncio.create_task(
+                                process_voice_clone(chat_id, voice_file_id, first_name)
+                            )
+                        elif text:
                             print(f"📩 Message from {first_name}: {text[:50]}...")
                             asyncio.create_task(
                                 process_telegram_message(chat_id, text, first_name)
@@ -216,7 +294,16 @@ async def telegram_webhook(request: Request, background_tasks: BackgroundTasks):
             text = message.get("text", "")
             first_name = message.get("from", {}).get("first_name", "friend")
 
-            if text:
+            # Check if user sent a voice message while in clone mode
+            if "voice" in message and chat_id in users_awaiting_voice:
+                voice_file_id = message["voice"]["file_id"]
+                background_tasks.add_task(
+                    process_voice_clone,
+                    chat_id,
+                    voice_file_id,
+                    first_name
+                )
+            elif text:
                 background_tasks.add_task(
                     process_telegram_message,
                     chat_id,
