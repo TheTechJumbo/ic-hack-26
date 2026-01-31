@@ -21,24 +21,27 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Kalm</h1>
-          <p className="text-white/80 text-lg">
-            Your 24/7 recovery companion
+          <h1 className="text-5xl font-semibold text-[#3d5a3d] mb-2">Kalm</h1>
+          <p className="text-[#3d5a3d]/80 text-lg italic">
+            Supporting your recovery
+          </p>
+          <p className="text-[#3d5a3d]/80 text-lg italic">
+            One chat at a time
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8">
+          <h2 className="text-xl font-semibold text-[#3d5a3d] mb-2">
             Get Personalized Support
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-[#3d5a3d]/70 mb-6">
             Tell us what you're recovering from and receive a personalized voice message of support.
           </p>
 
           <div className="mb-6">
             <label
               htmlFor="recovery-type"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-[#3d5a3d] mb-2"
             >
               What are you recovering from?
             </label>
@@ -46,7 +49,7 @@ export default function Home() {
               id="recovery-type"
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-gray-800 bg-white"
+              className="w-full px-4 py-3 rounded-lg border border-[#3d5a3d]/30 focus:ring-2 focus:ring-[#3d5a3d] focus:border-transparent transition-all text-[#3d5a3d] bg-white"
             >
               <option value="">Select an option</option>
               {RECOVERY_TYPES.map((type) => (
@@ -63,8 +66,8 @@ export default function Home() {
             rel="noopener noreferrer"
             className={`block w-full py-4 px-4 text-white font-semibold rounded-lg transition-all text-center ${
               selectedType
-                ? 'bg-[#0088cc] hover:bg-[#0077b5]'
-                : 'bg-gray-400 cursor-not-allowed'
+                ? 'bg-[#3d5a3d] hover:bg-[#4a6b4a]'
+                : 'bg-[#3d5a3d]/40 cursor-not-allowed'
             }`}
             onClick={(e) => {
               if (!selectedType) {
@@ -82,16 +85,16 @@ export default function Home() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-[#3d5a3d]/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">or talk live</span>
+              <span className="px-2 bg-white/90 text-[#3d5a3d]/60">or talk live</span>
             </div>
           </div>
 
           <a
             href="/talk"
-            className="block w-full py-4 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity text-center"
+            className="block w-full py-4 px-4 bg-[#3d5a3d] text-white font-semibold rounded-lg hover:bg-[#4a6b4a] transition-colors text-center"
           >
             <span className="flex items-center justify-center gap-2">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,22 +104,22 @@ export default function Home() {
             </span>
           </a>
 
-          <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-            <p className="text-sm text-gray-500 mb-3">
+          <div className="mt-6 pt-6 border-t border-[#3d5a3d]/10 text-center">
+            <p className="text-sm text-[#3d5a3d]/60 mb-3">
               Already using Kalm?
             </p>
             <a
               href="https://t.me/Kalm_ai_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#0088cc] hover:underline text-sm font-medium"
+              className="text-[#3d5a3d] hover:underline text-sm font-medium"
             >
               Open Telegram Bot
             </a>
           </div>
         </div>
 
-        <p className="text-center text-white/60 text-sm mt-6">
+        <p className="text-center text-[#3d5a3d]/60 text-sm mt-6">
           You are not alone. Help is always available.
         </p>
       </div>

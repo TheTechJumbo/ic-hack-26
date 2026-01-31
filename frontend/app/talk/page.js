@@ -63,11 +63,11 @@ export default function TalkPage() {
   const getStatusColor = () => {
     switch (conversation.status) {
       case 'connected':
-        return 'bg-green-500'
+        return 'bg-[#3d5a3d]'
       case 'connecting':
-        return 'bg-yellow-500'
+        return 'bg-[#3d5a3d]/60'
       default:
-        return 'bg-gray-400'
+        return 'bg-[#3d5a3d]/30'
     }
   }
 
@@ -85,23 +85,23 @@ export default function TalkPage() {
     <main className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Talk to Kalm</h1>
-          <p className="text-white/80 text-lg">
+          <h1 className="text-5xl font-semibold text-[#3d5a3d] mb-2">Talk to Kalm</h1>
+          <p className="text-[#3d5a3d]/80 text-lg italic">
             Real-time voice support
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8">
           {/* Status Indicator */}
           <div className="flex items-center justify-center gap-3 mb-8">
             <div className={`w-3 h-3 rounded-full ${getStatusColor()} ${conversation.status === 'connected' ? 'animate-pulse' : ''}`} />
-            <span className="text-gray-600">{getStatusText()}</span>
+            <span className="text-[#3d5a3d]/70">{getStatusText()}</span>
           </div>
 
           {/* Visual Feedback */}
           {conversation.status === 'connected' && (
             <div className="flex justify-center mb-8">
-              <div className={`w-24 h-24 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center ${conversation.isSpeaking ? 'animate-pulse' : ''}`}>
+              <div className={`w-24 h-24 rounded-full bg-[#3d5a3d] flex items-center justify-center ${conversation.isSpeaking ? 'animate-pulse' : ''}`}>
                 <svg
                   className="w-12 h-12 text-white"
                   fill="none"
@@ -140,7 +140,7 @@ export default function TalkPage() {
             <button
               onClick={startConversation}
               disabled={isConnecting}
-              className="w-full py-4 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 px-4 bg-[#3d5a3d] text-white font-semibold rounded-lg hover:bg-[#4a6b4a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isConnecting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -185,7 +185,7 @@ export default function TalkPage() {
             </button>
           )}
 
-          <p className="text-center text-gray-500 text-sm mt-6">
+          <p className="text-center text-[#3d5a3d]/60 text-sm mt-6">
             Speak freely - Kalm is here to listen and support you.
           </p>
         </div>
@@ -193,7 +193,7 @@ export default function TalkPage() {
         <div className="text-center mt-6">
           <a
             href="/"
-            className="text-white/60 hover:text-white text-sm"
+            className="text-[#3d5a3d]/60 hover:text-[#3d5a3d] text-sm"
           >
             ← Back to home
           </a>
