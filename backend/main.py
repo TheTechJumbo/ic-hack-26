@@ -117,7 +117,20 @@ async def process_telegram_message(chat_id: int, text: str, first_name: str = "f
 
             await send_text_message(chat_id, "Recording a message from your future self... 🎙️")
 
-            future_self_message = f"""Hey {first_name}, this is future you speaking. I know things might feel hard right now, but I want you to know how proud I am of you. Every day you choose recovery, you're choosing yourself. You're building a life worth living. Keep going - I'm proof that it gets better. You've got this."""
+            # Check if user provided a custom prompt after /me
+            parts = text.split(maxsplit=1)
+            custom_prompt = parts[1] if len(parts) > 1 else None
+
+            if custom_prompt:
+                # Generate custom response based on user's request
+                prompt = f"""You are the user's future self speaking to them. Your name is {first_name}.
+The user has requested: {custom_prompt}
+
+Respond as their encouraging future self, fulfilling their request. Start with "Hey {first_name}, this is future you speaking." Keep it under 150 words and make it personal and heartfelt."""
+                future_self_message = await generate_supportive_response(prompt, first_name)
+            else:
+                # Default encouragement
+                future_self_message = f"""Hey {first_name}, this is future you speaking. I know things might feel hard right now, but I want you to know how proud I am of you. Every day you choose recovery, you're choosing yourself. You're building a life worth living. Keep going - I'm proof that it gets better. You've got this."""
 
             audio_bytes = generate_voice_message(future_self_message, voice_id=voice_id)
             await send_voice_message(chat_id=str(chat_id), audio_bytes=audio_bytes)

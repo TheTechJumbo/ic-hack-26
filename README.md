@@ -24,6 +24,7 @@ Your 24/7 AI recovery companion. Get support through voice messages on Telegram 
 | `/start` | Get a welcome message |
 | `/clone` | Clone your voice for "future self" messages |
 | `/me` | Hear encouragement from your future self (requires cloning first) |
+| `/me [request]` | Custom message from your future self (e.g. `/me encourage me with scripture`) |
 | `/call` | Get a link to start a live voice conversation |
 
 ## Voice Cloning (Future Self)
@@ -34,6 +35,17 @@ Record your voice and hear motivational messages spoken by *you*:
 2. Record and send a 15-30 second voice message
 3. Wait for confirmation that your voice was cloned
 4. Use `/me` anytime to hear your future self cheering you on
+
+### Custom Messages
+
+Add any request after `/me` to get a personalized response:
+
+- `/me encourage me with religious scripture`
+- `/me remind me why I started this journey`
+- `/me help me get through this craving`
+- `/me tell me what my life will look like in 5 years`
+
+Your future self will respond to whatever you ask.
 
 ## Crisis Support
 
