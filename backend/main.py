@@ -5,11 +5,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import httpx
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from services.elevenlabs import generate_voice_message
+
+# ElevenLabs Conversational AI Agent ID
+ELEVENLABS_AGENT_ID = os.getenv("ELEVENLABS_AGENT_ID")
+WEBSITE_URL = os.getenv("WEBSITE_URL", "http://localhost:3000")
 from services.openai_service import generate_supportive_response
 from services.telegram_service import (
     send_voice_message,
@@ -26,6 +31,14 @@ WELCOME_MESSAGE = """Hey {name}, welcome to Kalm. I'm so glad you're here. I'm y
 async def process_telegram_message(chat_id: int, text: str, first_name: str = "friend"):
     """Process incoming message and send voice response."""
     try:
+        # Handle /call command - send link to voice chat (no voice message)
+        if text.startswith("/call"):
+            await send_text_message(
+                chat_id,
+                f"Ready to talk? Click the link below to start a real-time voice conversation with Kalm:\n\n{WEBSITE_URL}/talk\n\nI'll be waiting to chat with you! 💚"
+            )
+            return
+
         # 1. Send "Recording voice message..." immediately
         await send_text_message(chat_id, "Recording voice message... 🎙️")
 
@@ -210,6 +223,34 @@ async def send_support(request: SupportRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/conversation/start")
+async def start_conversation():
+    ELEVENLABS_AGENT_ID = os.getenv("ELEVENLABS_AGENT_ID")
+    """Generate a signed URL for ElevenLabs Conversational AI."""
+    if not ELEVENLABS_AGENT_ID:
+        raise HTTPException(status_code=500, detail="ELEVENLABS_AGENT_ID not configured")
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://api.elevenlabs.io/v1/convai/conversation/get_signed_url",
+                params={"agent_id": ELEVENLABS_AGENT_ID},
+                headers={"xi-api-key": os.getenv("ELEVENLABS_API_KEY")},
+                timeout=30.0,
+            )
+
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"ElevenLabs API error: {response.text}"
+                )
+
+            return response.json()
+
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Request failed: {str(e)}")
 
 
 @app.get("/health")
