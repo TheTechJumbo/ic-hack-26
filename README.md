@@ -1,2 +1,2 @@
-# ic-hack-26
-we are not sure yet
+# ic-hack-26 - Helping addicts with VoiceAI
+
