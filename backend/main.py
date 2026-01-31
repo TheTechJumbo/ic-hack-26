@@ -31,7 +31,18 @@ async def process_telegram_message(chat_id: int, text: str, first_name: str = "f
 
         # Handle /start command with voice welcome
         if text.startswith("/start"):
-            welcome_text = WELCOME_MESSAGE.format(name=first_name)
+            # Parse deep link parameter: "/start alcohol" → "alcohol"
+            parts = text.split(maxsplit=1)
+            recovery_type = parts[1] if len(parts) > 1 else None
+
+            if recovery_type:
+                # Personalized welcome based on recovery type from website
+                prompt = f"The user {first_name} is starting their recovery journey from {recovery_type}. Give them a warm, personalized welcome that acknowledges their specific struggle with {recovery_type} and offers encouragement. Keep it under 100 words."
+                welcome_text = await generate_supportive_response(prompt, first_name)
+            else:
+                # Generic welcome
+                welcome_text = WELCOME_MESSAGE.format(name=first_name)
+
             audio_bytes = generate_voice_message(welcome_text)
             await send_voice_message(chat_id=str(chat_id), audio_bytes=audio_bytes)
             return

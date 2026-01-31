@@ -161,3 +161,40 @@ ic-hack-26/
 ### AI responses not working?
 - Verify your `OPENAI_API_KEY` is valid
 - Check for errors in the terminal output
+
+## Deploying to Vercel (Frontend)
+
+The Next.js frontend can be deployed to Vercel for free.
+
+### Steps
+
+1. **Push your code to GitHub** (if not already done)
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push
+   ```
+
+2. **Go to [vercel.com](https://vercel.com)** and sign in with GitHub
+
+3. **Click "Add New Project"** and import your repository
+
+4. **Configure the project:**
+   - **Root Directory**: Click "Edit" and set to `frontend`
+   - **Framework Preset**: Next.js (should auto-detect)
+
+5. **Click "Deploy"**
+
+6. **Done!** Your frontend will be live at `https://your-project.vercel.app`
+
+### Custom Domain (Optional)
+
+1. Go to your project settings on Vercel
+2. Click "Domains"
+3. Add your custom domain and follow DNS instructions
+
+### Notes
+
+- The frontend is static and doesn't require environment variables
+- The Telegram bot link is hardcoded to `@kalm_ai_bot`
+- Backend must be deployed separately (e.g., Railway, Render, or a VPS)
