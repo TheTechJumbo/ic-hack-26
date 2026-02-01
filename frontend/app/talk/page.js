@@ -33,9 +33,8 @@ export default function TalkPage() {
       // Request microphone permission
       await navigator.mediaDevices.getUserMedia({ audio: true })
 
-      // Get signed URL from backend
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      const res = await fetch(`${apiUrl}/api/conversation/start`, {
+      // Get signed URL from Next.js API route
+      const res = await fetch('/api/conversation/start', {
         method: 'POST',
       })
 
