@@ -22,30 +22,32 @@ Your 24/7 AI recovery companion. Get support through voice messages on Telegram 
 | Command | What it does |
 |---------|--------------|
 | `/start` | Get a welcome message |
-| `/clone` | Clone your voice for "future self" messages |
-| `/me` | Hear encouragement from your future self (requires cloning first) |
-| `/me [request]` | Custom message from your future self (e.g. `/me encourage me with scripture`) |
+| `/clone` | Clone a voice for personal messages (yours or a loved one's) |
+| `/personal` | Hear encouragement in your cloned voice (requires cloning first) |
+| `/personal [request]` | Custom message in your cloned voice (e.g. `/personal encourage me with scripture`) |
 | `/call` | Get a link to start a live voice conversation |
 
-## Voice Cloning (Future Self)
+## Voice Cloning
 
-Record your voice and hear motivational messages spoken by *you*:
+Clone a voice and hear motivational messages spoken in that voice:
 
 1. Send `/clone` to the bot
-2. Record and send a 15-30 second voice message
-3. Wait for confirmation that your voice was cloned
-4. Use `/me` anytime to hear your future self cheering you on
+2. Record and send a 15-30 second voice message - this can be:
+   - **Your own voice** - hear encouragement from your future self
+   - **A friend or family member** - hear support from someone who cares about you
+3. Wait for confirmation that the voice was cloned
+4. Use `/personal` anytime to hear an encouraging message in that voice
 
 ### Custom Messages
 
-Add any request after `/me` to get a personalized response:
+Add any request after `/personal` to get a personalized response:
 
-- `/me encourage me with religious scripture`
-- `/me remind me why I started this journey`
-- `/me help me get through this craving`
-- `/me tell me what my life will look like in 5 years`
+- `/personal encourage me with religious scripture`
+- `/personal remind me why I started this journey`
+- `/personal help me get through this craving`
+- `/personal tell me I can do this`
 
-Your future self will respond to whatever you ask.
+The cloned voice will respond to whatever you ask.
 
 ## Crisis Support
 

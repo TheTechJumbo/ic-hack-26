@@ -79,7 +79,7 @@ async def process_voice_clone(chat_id: int, voice_file_id: str, first_name: str)
 
         await send_text_message(
             chat_id,
-            f"✨ Voice cloned successfully, {first_name}!\n\nNow you can use /me anytime to hear an encouraging message from your future self. Try it now! 💚"
+            f"✨ Voice cloned successfully, {first_name}!\n\nNow you can use /personal anytime to hear an encouraging message in that voice. Try it now! 💚"
         )
 
     except Exception as e:
@@ -101,38 +101,38 @@ async def process_telegram_message(chat_id: int, text: str, first_name: str = "f
             users_awaiting_voice.add(chat_id)
             await send_text_message(
                 chat_id,
-                f"🎤 Let's clone your voice, {first_name}!\n\nPlease send me a voice message (15-30 seconds) where you speak clearly and naturally. Say anything you like - maybe introduce yourself or read a passage.\n\nOnce I have your voice, you'll be able to use /me to hear encouragement from your future self! 💚"
+                f"🎤 Let's set up a personal voice, {first_name}!\n\nYou can clone your own voice to hear encouragement from your future self, OR clone the voice of a friend or family member who supports your recovery.\n\nPlease send me a voice message (15-30 seconds) of whoever you'd like to clone - speaking clearly and naturally. Say anything - maybe an introduction or reading a passage.\n\nOnce cloned, use /personal to hear a supportive message in that voice! 💚"
             )
             return
 
-        # Handle /me command - send message in cloned voice
-        if text.startswith("/me"):
+        # Handle /personal command - send message in cloned voice
+        if text.startswith("/personal"):
             voice_id = get_user_voice(str(chat_id))
             if not voice_id:
                 await send_text_message(
                     chat_id,
-                    f"You haven't cloned your voice yet, {first_name}!\n\nUse /clone to record your voice first, then /me will work. 🎙️"
+                    f"You haven't set up a personal voice yet, {first_name}!\n\nUse /clone to record a voice first (yours or a loved one's), then /personal will work. 🎙️"
                 )
                 return
 
-            await send_text_message(chat_id, "Recording a message from your future self... 🎙️")
+            await send_text_message(chat_id, "Recording a personal message for you... 🎙️")
 
-            # Check if user provided a custom prompt after /me
+            # Check if user provided a custom prompt after /personal
             parts = text.split(maxsplit=1)
             custom_prompt = parts[1] if len(parts) > 1 else None
 
             if custom_prompt:
                 # Generate custom response based on user's request
-                prompt = f"""You are the user's future self speaking to them. Your name is {first_name}.
+                prompt = f"""You are speaking as someone who deeply cares about {first_name} and supports their recovery journey.
 The user has requested: {custom_prompt}
 
-Respond as their encouraging future self, fulfilling their request. Start with "Hey {first_name}, this is future you speaking." Keep it under 150 words and make it personal and heartfelt."""
-                future_self_message = await generate_supportive_response(prompt, first_name)
+Respond with warmth and encouragement, fulfilling their request. Start with "Hey {first_name}," and keep it under 150 words. Make it personal and heartfelt."""
+                personal_message = await generate_supportive_response(prompt, first_name)
             else:
                 # Default encouragement
-                future_self_message = f"""Hey {first_name}, this is future you speaking. I know things might feel hard right now, but I want you to know how proud I am of you. Every day you choose recovery, you're choosing yourself. You're building a life worth living. Keep going - I'm proof that it gets better. You've got this."""
+                personal_message = f"""Hey {first_name}, I just want you to know how proud I am of you. I know things might feel hard right now, but you're doing something incredible. Every day you choose recovery, you're choosing yourself. You're building a life worth living. Keep going - you've got this, and I believe in you."""
 
-            audio_bytes = generate_voice_message(future_self_message, voice_id=voice_id)
+            audio_bytes = generate_voice_message(personal_message, voice_id=voice_id)
             await send_voice_message(chat_id=str(chat_id), audio_bytes=audio_bytes)
             return
 
